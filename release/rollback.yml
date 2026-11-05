@@ -1,2 +1,21 @@
-rollback_strategy: 
-target_version: 
+rollback_strategy: "Automated Canary / Blue-Green Rollback with Kubernetes Deployment Rollout Undo"
+target_version: "v2.2.0"
+trigger_conditions:
+  - "Health check failure on /health endpoint (non-200 HTTP status)"
+  - "Error rate exceeds 1% of total requests over a 5-minute window"
+  - "Container crash loops or high restart count (CrashLoopBackOff)"
+  - "P99 response latency exceeds 500ms"
+rollback_steps:
+  - step: 1
+    action: "Drain incoming traffic from failing v2.3.0 pods"
+  - step: 2
+    action: "Trigger rollout undo: kubectl rollout undo deployment/lab-app"
+  - step: 3
+    action: "Restore container image to orderflow:v2.2.0"
+  - step: 4
+    action: "Run scripts/rollback.sh to verify service stability"
+  - step: 5
+    action: "Confirm /health returns status 200 OK"
+verification_endpoint: "/health"
+max_allowed_rollback_time_seconds: 120
+notification_channel: "#devops-release-alerts"

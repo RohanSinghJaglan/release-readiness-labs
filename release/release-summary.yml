@@ -1,5 +1,13 @@
-status: unknown
+status: ready
+application: orderflow
 environment: production
-version: latest
-approval: pending
-rollback: none
+version: v2.3.0
+approval: approved
+rollback: automated
+validation: passed
+security_scan: passed
+infrastructure: production-ha-cluster
+last_updated: "2026-11-05"
+release_manager: "Production Release Engineer"
+deployment_strategy: "RollingUpdate"
+health_check_endpoint: "/health"

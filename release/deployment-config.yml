@@ -1,7 +1,13 @@
 environment: production
-image_tag: production-build
+application: orderflow
+image_tag: v2.3.0
+infrastructure:
+  platform: kubernetes
+  cluster: production-ha-cluster
+  replicas: 3
+  strategy: RollingUpdate
 secrets:
   API_KEY: ${API_KEY}
-  DATABASE_PASSWORD: password123
-  TOKEN: abcd1234
-  AWS_SECRET: test-secret
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  TOKEN: ${TOKEN}
+  AWS_SECRET: ${AWS_SECRET}

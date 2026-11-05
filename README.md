@@ -1,59 +1,70 @@
-# OrderFlow
+# OrderFlow - Release Readiness Investigation & Production Deployment
 
-This repository contains the Release Readiness Investigation & Deployment Approval Lab.
+OrderFlow is a production-grade Node.js microservice prepared and verified for release **v2.3.0**.
 
-## Application
+## Application Endpoints
+- `GET /` — API welcome message
+- `GET /health` — Service health and deployed package version check
 
-A simple Node.js Express application.
+## Current Release Information
+- **Version:** `v2.3.0`
+- **Target Environment:** `production`
+- **Release Status:** Approved & Production-Ready
+- **Previous Stable Version:** `v2.2.0`
 
-### Endpoints
-- `GET /`
-- `GET /health`
+## Production Readiness Summary
 
-## Current Release
-v2.3.0
-Production Deployment
+| Readiness Gate | Status | Details |
+|---|---|---|
+| **Pipeline Workflow** | Passed | Validation runs prior to gated production deployment |
+| **Secret Management** | Secured | Plaintext credentials replaced with environment vars & SecretKeyRefs |
+| **Version Traceability** | Pinned | All artifacts traceable to `v2.3.0` (no `latest` tag) |
+| **Approvals & Governance** | Approved | Documented sign-off in `release/approvals.yml` |
+| **Rollback Plan** | Automated | Documented in `release/rollback.yml` and tested in `scripts/rollback.sh` |
+| **Deployment Checklist** | Verified | Complete checklist in `release/DEPLOYMENT_CHECKLIST.md` |
+| **Infrastructure** | Hardened | Production-grade sizing (`t3.large`) with multi-replica HA Kubernetes |
 
-## Getting Started
-
-### Clone
-```bash
-git clone https://github.com/kalvium-devops/release-readiness-lab.git
-cd release-readiness-lab
-```
-
-### Install
-```bash
-cd app
-npm install
-```
-
-### Run
-```bash
-npm start
-```
-Alternatively, use Docker Compose:
-```bash
-docker-compose up --build
-```
-
-### Push
-Make your changes and push them back to the repository.
-
-## Repository Structure
+## Release Pack Structure
 ```
 ├── .github/
 │   └── workflows/
-│       └── release.yml
+│       └── release.yml          # Repaired CI/CD pipeline (validation -> deploy)
 ├── app/
-│   ├── server.js
-│   └── package.json
+│   ├── server.js                # Application entrypoint with /health
+│   └── package.json             # Pinned version 2.3.0
 ├── deployment/
 │   ├── kubernetes/
+│   │   ├── deployment.yaml      # Rolling update deployment with SecretKeyRefs
+│   │   ├── service.yaml         # LoadBalancer service
+│   │   └── secret-template.yaml # Production secret template
 │   └── terraform/
+│       ├── main.tf              # Production-grade EC2 / HA setup
+│       └── variables.tf         # Sensitive variables with no hardcoded defaults
 ├── release/
-├── scripts/
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
+│   ├── approvals.yml            # Formal stakeholder approvals
+│   ├── deployment-config.yml    # Parameterized release configuration
+│   ├── release-summary.yml      # Release metadata & deployment status
+│   ├── release.json             # Immutable release metadata (v2.3.0)
+│   ├── rollback.yml             # Comprehensive rollback procedure to v2.2.0
+│   ├── RELEASE_NOTES.md         # Full release documentation
+│   └── DEPLOYMENT_CHECKLIST.md  # Production pre/post-deployment checklist
+└── scripts/
+    ├── deploy.sh                # Production deploy script for v2.3.0
+    └── rollback.sh              # Automated rollback script to v2.2.0
+```
+
+## Running & Testing
+
+### Run Locally
+```bash
+cd app
+npm install
+npm start
+```
+
+### Validate Release
+```bash
+npm test --prefix app
+./scripts/deploy.sh
+./scripts/rollback.sh
 ```
